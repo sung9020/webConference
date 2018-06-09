@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="utf-8">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+
+<title>Web Meeting Live</title>
+
+<!-- Bootstrap Core CSS -->
+<link href="css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom CSS -->
+<link href="css/shop-homepage.css" rel="stylesheet">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+	<!-- Navigation -->
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">
+					<div class="col-xs-2">
+						<input class="form-control input-lg" type="text" id = "channelIdInput"
+							placeholder="채널 ID" value= "">
+					</div>
+					<button type="button" class="btn btn-primary btn-lg" id = "connectChannelButton">채널 입장</button>
+					<button type="button" class="btn btn-primary btn-lg" id = "createChannelButton" >채널 생성</button>
+					<div class="col-xs-2">
+						<input class="form-control input-lg" type="text" id="channelName"
+							placeholder="방이름" value= "">
+					</div>
+					<div class="col-xs-2">
+						<input class="form-control input-lg" type="text" id="userid"
+							placeholder="" value= "">
+					</div>
+				</h1>
+			</div>
+		</div>
+	</div>
+	<!-- /.container -->
+
+	<!-- Page Content -->
+	<div class="container">
+		<div class="row" >
+			<div class="col-md-3" >
+				<div class="list-group" >
+					<div class="col-md-6 portfolio-item" id = "myFace" >
+					<video poster="http://placehold.it/1280x1024" id = "my" width="250" height="250"></video> 
+<style>
+textarea {
+	width: 270px;
+	height: 400px;
+	overflow: auto;
+}
+</style>
+
+
+					</div>
+						<textarea rows="5" cols="35" id="transcription" readonly></textarea>
+						<input rows="1" type="text" id="inputmessage" onkeypress="chkEnter()" size="35" style='height: 40px;''></input>
+						<button type="button" id ="submit" class="btn btn-default" onclick="send()">제출</button>
+					
+				</div>
+			</div>
+
+
+			<div class="col-md-9">
+
+				<div class="row carousel-holder" ></div>
+
+				<div class="row" >
+					<div class="col-md-6 portfolio-item" id ="otherFace_1" >
+					<!-- 	<video poster="http://placehold.it/1280x1024" id = "other_1" width="400"
+						height="400"></video> -->
+					</div>
+					<div class="col-md-6 portfolio-item" id ="otherFace_2">
+							<!-- 	<video poster="http://placehold.it/1280x1024" id = "other_1" width="400"
+						height="400"></video> -->
+						
+					</div>
+				</div>
+				<!-- /.row -->
+
+				<!-- Projects Row -->
+				<div class="row">
+					<div class="col-md-6 portfolio-item" id = "otherFace_3">
+							<!-- 	<video poster="http://placehold.it/1280x1024" id = "other_1" width="400"
+						height="400"></video> -->
+					</div>
+					<div class="col-md-6 portfolio-item" id = "otherFace_4">
+						<!-- 	<video poster="http://placehold.it/1280x1024" id = "other_1" width="400"
+						height="400"></video> -->
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<!-- /.container -->
+
+	<div class="container">
+
+		<hr>
+
+		<!-- Footer -->
+		<footer>
+			<div class="row">
+				<div class="col-lg-12">
+					<p>Copyright &copy; J with Bootstrap 2015</p>
+				</div>
+			</div>
+		</footer>
+
+	</div>
+	<!-- /.container -->
+
+	<!-- jQuery -->
+	<script src="js/jquery.js"></script>
+
+	<!-- Bootstrap Core JavaScript -->
+	<script src="js/bootstrap.min.js"></script>
+<script>
+function chkEnter() {
+	 
+    if (event.which || event.keyCode) {
+
+        if ((event.which == 13) || (event.keyCode == 13)) {
+        	document.getElementById("inputmessage").value = document.getElementById("inputmessage").value.replace(/[\n\r]/g,"");   	
+            document.getElementById("submit").click();
+            
+            return false;
+        }
+    }
+    else {       
+        return true;
+    }
+}
+</script>
+
+  <script src="http://www.playrtc.com/sdk/js/playrtc.min.js"></script>
+  		<!-- web conference -->
+  		<script>
+  		var uid_list = ["test1","test2","test3","test4"];
+  		 var userID = document.getElementById('userid');
+  		
+  		app = new PlayRTC({
+  			projectKey: 'cbc67e58-2716-4547-925b-7d8f06f6bbeb'
+  		
+  		});
+  	
+	
+  		app.on('connectChannel', function(channelId) {
+  	      document.getElementById('channelIdInput').value = channelId;
+  			
+  		var media = app.getMedia();
+		var stream = media.getStream();
+		console.log(stream);
+  		  			
+		var channelId = document.getElementById('channelIdInput').value;
+		app.getPeerList(channelId, function(result){
+				
+				var peers = result.peers;
+				var len = peers.length;
+				console.log(peers);
+				console.log("구분선");
+				for(var i=0; i < len; i++)
+					{
+					//console.log(i+" 번째 "+peers[i].id);
+									
+						var peer = app.getPeerByPeerId(peers[i].id);
+						console.log(peer);
+						console.log("구분선2");
+						var media = peer.getMedia();
+						var remoteStream = media.getStream();
+						var pid = peers[i].id;
+						console.log(pid);
+						var uid = peers[i].uid;
+					}
+			});
+  	    });
+  		
+  	
+  		app.on('addLocalStream',function(stream)
+  				{
+  			  			
+  		  var video = PlayRTC.utils.createVideo(stream, {
+  		    autoPlay: true,
+  		    controls: false, // Can be overriding.
+  		    width: "250",
+  		    height: "250"
+  		  });
+  		    		  
+  		   //document.getElementById("myFace").removeChild(my); 
+  		   document.getElementById("myFace").appendChild(video);
+ 		
+  			});
+  		
+  		
+  		app.on('addRemoteStream', function(pid, uid, remoteStream)
+  				{
+  			console.log(remoteStream);
+  			
+  			var video2 = PlayRTC.utils.createVideo(remoteStream, {
+  				autoPlay: true,
+  				controls: false, //오버라이드 할 수 있다.
+  				width: "350",
+  				height: "350"
+  			});					
+			
+  			document.getElementById("otherFace_1").appendChild(video2);
+  		
+  			/*
+  		if(i < 4)
+  			{
+  				
+  				var other = new String("other_" + i + 1);
+  				
+  				document.getElementById(otherface).removeChild(other); 
+  				document.getElementById(otherface).appendChild(video2);
+				i++;
+  			}
+  		else 
+  			{
+  			 i = 0;
+  			}
+  			*/
+  			/*
+  			else if(!document.getElementById("otherFace_2").hasChildNodes())
+  				{
+  				document.getElementById("otherFace_2").removeChild(other_2);
+  				document.getElementById("otherFace_2").appendChild(video2);
+  				}
+  			else if(!document.getElementById("otherface_3").hasChildNodes())
+  				{
+  				document.getElementById("otherFace_3").removeChild(other_3); 
+  					document.getElementById("otherFace_3").appendChild(video2);
+  				}
+  			else if(!document.getElementById("otherFace_4").hasChildNodes())
+  				{
+  				document.getElementById("otherFace_4").removeChild(other_4); 
+  				document.getElementById("otherFace_4").appendChild(video2);
+  				}
+  				*/
+  			});
+  	
+  				
+  		 document.getElementById('createChannelButton').onclick = function(event) {
+  		      
+  			var Option = new Object();
+  			var channel = new Object();
+  			channel.channelName = document.getElementById('channelName').value;
+  			Option.channel = channel;
+  			var peer = new Object();
+  			peer.uid = document.getElementById('userid').value;
+  			peer.userName = "mickey";
+  			Option.peer = peer;
+  			console.log(Option);
+  			app.createChannel(Option);
+  		  			
+  		  	return false;
+  		 
+  		    };
+  		
+  		  document.getElementById('connectChannelButton').onclick = function(event) {
+  		    var channelId = document.getElementById('channelIdInput').value;
+ 			var Option = new Object();
+  			
+ 			var Option = new Object();
+  			var channel = new Object();
+  			channel.channelName = document.getElementById('channelName').value;
+  			Option.channel = channel;
+  			var peer = new Object();
+  			peer.uid = document.getElementById('userid').value;
+  			peer.userName = "Sangyoon";
+  			Option.peer = peer;
+  	 	 	
+  			
+  			if (!channelId && !Option) { alert("문자를 입력하세요"); }
+  		      app.connectChannel(channelId,Option);
+  		      return false;
+  		  
+  		  }
+  		 </script>   
+  		<!-- Speech to text -->
+<script>
+        window.SpeechRecognition = window.SpeechRecognition        ||
+     							   window.webkitSpeechRecognition  ||
+      						       null;
+        if (window.SpeechRecognition === null) {
+            document.getElementById('createChannelButton').setAttribute('disabled', 'disabled');
+        //    document.getElementById('button-stop-ws').setAttribute('disabled', 'disabled');
+            console.log('error');
+         } else {
+        	 var recognizer = new window.SpeechRecognition();
+        	 var transcription = document.getElementById('transcription');
+        	  var inputMessage = document.getElementById('inputmessage');
+        	  var timer = 0;
+        	 recognizer.continuous = true;
+        	 recognizer.onresult = function(event) {
+                 //transcription.textContent = '';
+                 inputMessage.value='';
+                 for(var i = event.resultIndex; i < event.results.length;i++)
+               		{
+                		if(event.results[i].isFinal)
+                		{
+                			inputMessage.value = event.results[i][0].transcript+ '.';
+                			//transcription.textContent = event.results[i][0].transcript+ '.';
+                			send();
+                			               			
+                		}
+                		else
+                		{
+                			inputMessage.value += event.results[i][0].transcript;
+                			//transcription.textContent += event.results[i][0].transcript;
+                		}
+                		
+                	}
+                 
+        	 };
+        	
+        	 recognizer.interimResults = true;
+              document.getElementById('createChannelButton').addEventListener('click', function(){
+              try{
+            	  	 
+            	  recognizer.start();
+            	  //alert("recognizer_start");
+                 }
+              catch(ex){ recognizer.stop();  }
+              
+              });
+              document.getElementById('connectChannelButton').addEventListener('click', function(){
+                  try{
+                	  recognizer.start();
+                	 // alert("recognizer_start");
+                     }
+                  catch(ex){ recognizer.stop();}
+                  
+                  });
+              
+              //document.getElementById('button-stop-ws').addEventListener('click', function() {
+             //     recognizer.stop();
+              //   });
+        
+            }
+         
+        
+   </script>
+
+
+   <script type="text/javascript">
+        var textarea = document.getElementById("transcription");
+        var webSocket = new WebSocket('ws://:8080/conference/broadcasting');
+        
+        
+    webSocket.onerror = function(event) {
+      onError(event)
+    };
+    webSocket.onopen = function(event) {
+      onOpen(event)
+    };
+    webSocket.onmessage = function(event) {
+      onMessage(event)
+    };
+    function onMessage(event) {
+        //textarea.value += "상대 : " + event.data + "\n";
+        textarea.value += event.data + "\n";
+    }
+    function onOpen(event) {
+      // textarea.value += event.data + "입장 하셨습니다. \n";
+      // webSocket.send(" 님이 입장 하셨습니다.\n");
+      }
+    function onError(event) {
+      alert(event.data);
+    }
+    
+ 
+    function send() { 
+     //   textarea.value += "나 : " + inputMessage.value + "\n";
+        textarea.value += "나: " + inputMessage.value + "\n";
+        webSocket.send(inputMessage.value);
+        textarea.scrollTop = textarea.scrollHeight;
+        inputMessage.value = '';      
+        
+        textarea = document.getElementById("transcription");
+        textarea.scrollTop = textarea.scrollHeight;
+          
+        
+    }
+    
+    
+
+  </script>
+  
+</body>
+
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="UTF-8" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+		<title>Web Conference System</title>
+		<meta name="description" content="A sidebar menu as seen on the Google Nexus 7 website" />
+		<meta name="keywords" content="google nexus 7 menu, css transitions, sidebar, side menu, slide out menu" />
+		<meta name="author" content="Codrops" />
+		<link rel="shortcut icon" href="../favicon.ico">
+		<link rel="stylesheet" type="text/css" href="css/normalize.css" />
+		<link rel="stylesheet" type="text/css" href="css/demo.css" />
+		<link rel="stylesheet" type="text/css" href="css/component.css" />
+	
+		<script src="js/modernizr.custom.js"></script>
+	</head>
+	<body onload="javascript_:today();return false;"> 
+		<div class="container">
+			<ul id="gn-menu" class="gn-menu-main">
+				<li class="gn-trigger">
+					<a class="gn-icon gn-icon-menu"><span>Menu</span></a>
+					<nav class="gn-menu-wrapper">
+						<div class="gn-scroller">
+							<ul class="gn-menu">
+								<li class="gn-search-item">
+									<input placeholder="채널 ID" type="search" class="gn-search" id = "channelIdInput" >
+									<a class="gn-icon gn-icon-search"><span>Channel ID</span></a>
+								</li>
+									<li class="gn-search-item">
+									<input placeholder="유저 닉네임" type="text" class="gn-search" id = "userid">
+									<a class="gn-icon gn-icon-search"><span>유저 id</span></a>
+								</li>
+								<li>
+									<a class="gn-icon gn-icon-cog" type = "button" id="createChannelButton">채널 생성하기</a>
+								</li>
+								<li>
+									<a class="gn-icon gn-icon-download" type = "button" id ="connectChannelButton">채널 입장하기</a>
+								</li>
+								<li>
+									<a class="gn-icon gn-icon-article" type = "button" onclick ="saveText()">스크립트 저장</a>
+								</li> 
+							 	<li>
+									<a class="gn-icon gn-icon-archive">로그아웃</a>
+								</li> 
+							</ul>
+						</div><!-- /gn-scroller -->
+					</nav>
+				</li>
+				<li><a href=""><span id="user_kickname">유저 닉네임</span></a></li>
+				<li><a href=""><span id="date">오늘 날짜</span></a></li>
+				<li><a class="codrops-icon codrops-icon-drop" href=""><span>Web Conference System</span></a></li>
+			</ul>
+			<header>
+			<div class="left">
+				<div class="left_top" id="myFace">
+				<!-- 여기에 자신 화면이 들어가게 된다 -->
+				</div>
+
+				<div class="left_bottom">
+					<textarea class="textarea" id="transcription" readonly></textarea>
+					<input class="inputbox" type="text" placeholder="  ↵" id="inputmessage" onkeypress="chkEnter()" >
+					<button class="inputbtn" type="button" id ="submit" onclick="send()">입력</button>
+				</div>
+			</div>
+			<div class="right">
+				<div class="right_one" id = "otherFace_1">
+				
+				</div>
+				<div class="right_two" id = "otherFace_2">
+				
+				</div>
+				<div class="right_three" id = "otherFace_3">
+				
+				</div>
+				<div class="right_four" id = "otherFace_4">
+				
+				</div>
+			</div>
+	
+      			</header> 
+		</div><!-- /container -->
+		<script src="js/classie.js"></script>
+		<script src="js/gnmenu.js"></script>
+		<script>
+			new gnMenu( document.getElementById( 'gn-menu' ) );
+		</script>
+		
+		    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+		    <script type="text/javascript" src="http://jsgetip.appspot.com"></script>
+<script>
+function today()
+{
+	  var newDate = new Date();
+	  var yy = newDate.getFullYear();
+	  var mm = newDate.getMonth()+1;
+	  var dd = newDate.getDate();
+	  var toDay = yy + "-" + mm + "-" + dd;
+	  $("#date").html(toDay);
+}
+function chkEnter() {
+	 
+    if (event.which || event.keyCode) {
+
+        if ((event.which == 13) || (event.keyCode == 13)) {
+        	document.getElementById("inputmessage").value = document.getElementById("inputmessage").value.replace(/[\n\r]/g,"");   	
+            document.getElementById("submit").click();
+            
+            return false;
+        }
+    }
+    else {       
+        return true;
+    }
+}
+
+function recognize_startar()
+{
+	try{
+	 recognizer.start();
+	 console.log("recognize start..");
+	}
+	catch(ex){
+		
+		 console.log("recognize already strat..");
+	}
+	
+	setTimeout("recognize_startar()",30000); 
+	
+}
+
+/*
+function recognize_stop()
+{
+	try{
+		recognizer.stop();
+		console.log("recognize start..");
+	}
+	catch(ex){
+		 recognizer.start();
+		 console.log("recognize stop..");
+	}
+	
+	setTimeout("recognize_stop()",60000); 
+	
+}*/
+</script>
+<script>
+      function saveText() {
+        var txtsrc = document.getElementById("transcription").value;
+      try{
+        var fileObject = new ActiveXObject("Scripting.FileSystemObject");
+        fWrite = fileObject.CreateTextFile("D:\\text.txt",true);
+        fWrite.write(txtsrc);
+        fWrite.close();
+        alert("저장완료");
+      }
+      catch(ex)
+      {
+    	  alert(ex);
+      }
+      }
+    </script>
+    
+  <script src="http://www.playrtc.com/sdk/js/playrtc.min.js"></script>
+  		<!-- web conference -->
+  		<script>
+  		
+  		app = new PlayRTC({
+  			projectKey: 'cbc67e58-2716-4547-925b-7d8f06f6bbeb'
+  		
+  		});
+  	
+	
+  		app.on('connectChannel', function(channelId) {
+  	     document.getElementById('channelIdInput').value = channelId;
+  	  	var media = app.getMedia();
+		var stream = media.getStream();
+		console.log(stream);
+  				
+		//var channelId = document.getElementById('channelIdInput').value;
+		app.getPeerList(channelId, function(result){
+				
+				var peers = result.peers;
+				var len = peers.length;
+				console.log(peers);
+				console.log("구분선");
+				for(var i=0; i < len; i++)
+					{
+					//console.log(i+" 번째 "+peers[i].id);
+									
+						var peer = app.getPeerByPeerId(peers[i].id);
+						console.log(peer);
+						console.log("구분선2");
+						var media = peer.getMedia();
+						var remoteStream = media.getStream();
+						var pid = peers[i].id;
+						console.log(pid);
+						var uid = peers[i].uid;
+					}
+			});
+  	    });
+  		
+  	
+  		app.on('addLocalStream',function(stream)
+  				{
+  			  			
+  		  var video = PlayRTC.utils.createVideo(stream, {
+  		    autoPlay: true,
+  		    controls: false, // Can be overriding.
+  		    width: "100%",
+  		    height: "100%"
+  		  });
+  		    		  
+  		   //document.getElementById("myFace").removeChild(my); 
+  		   document.getElementById("myFace").appendChild(video);
+ 		
+  			});
+  		
+  		
+  		app.on('addRemoteStream', function(pid, uid, remoteStream)
+  				{
+  			console.log(remoteStream);
+  			
+  			var video2 = PlayRTC.utils.createVideo(remoteStream, {
+  				autoPlay: true,
+  				controls: false, //오버라이드 할 수 있다.
+  				width: "100%",
+  				height: "100%"
+  			});					
+			console.log(document.getElementById("otherFace_1").childNodes.length);
+			if(document.getElementById("otherFace_1").childNodes.length < 2)
+  			document.getElementById("otherFace_1").appendChild(video2);
+			else if(document.getElementById("otherFace_2").childNodes.length < 2)
+				document.getElementById("otherFace_2").appendChild(video2);
+			else if(document.getElementById("otherFace_3").childNodes.length < 2)
+				document.getElementById("otherFace_3").appendChild(video2);
+			else if(document.getElementById("otherFace_4").childNodes.length < 2)
+				document.getElementById("otherFace_4").appendChild(video2);
+  			/*
+  		if(i < 4)
+  			{
+  				
+  				var other = new String("other_" + i + 1);
+  				
+  				document.getElementById(otherface).removeChild(other); 
+  				document.getElementById(otherface).appendChild(video2);
+				i++;
+  			}
+  		else 
+  			{
+  			 i = 0;
+  			}
+  			*/
+  			/*
+  			else if(!document.getElementById("otherFace_2").hasChildNodes())
+  				{
+  				document.getElementById("otherFace_2").removeChild(other_2);
+  				document.getElementById("otherFace_2").appendChild(video2);
+  				}
+  			else if(!document.getElementById("otherface_3").hasChildNodes())
+  				{
+  				document.getElementById("otherFace_3").removeChild(other_3); 
+  					document.getElementById("otherFace_3").appendChild(video2);
+  				}
+  			else if(!document.getElementById("otherFace_4").hasChildNodes())
+  				{
+  				document.getElementById("otherFace_4").removeChild(other_4); 
+  				document.getElementById("otherFace_4").appendChild(video2);
+  				}
+  				*/
+  			});
+  	
+  				
+  		 document.getElementById('createChannelButton').onclick = function(event) {
+  		      
+  			var Option = new Object();
+  			//var channel = new Object();
+  			//channel.channelName = document.getElementById('channelName').value;
+  			//Option.channel = channel;
+  			var peer = new Object();
+  			peer.userName = document.getElementById('userid').value;
+  			//peer.userName = ;
+  			Option.peer = peer;
+  			console.log(Option);
+  			app.createChannel(Option);
+  		  			
+  		  	return false;
+  		 
+  		    };
+  		
+  		  document.getElementById('connectChannelButton').onclick = function(event) {
+  		    var channelId = document.getElementById('channelIdInput').value;
+ 			var Option = new Object();
+  			
+ 			//var Option = new Object();
+  	//		var channel = new Object();
+  	//		channel.channelName = document.getElementById('channelName').value;
+  	//		Option.channel = channel;
+  			var peer = new Object();
+  			peer.userName = document.getElementById('userid').value;
+  			//peer.userName = "Sangyoon";
+  			Option.peer = peer;
+  	 	 	
+  			
+  			if (!channelId && !Option) { alert("문자를 입력하세요"); }
+  		      app.connectChannel(channelId,Option);
+  		      return false;
+  		  
+  		  }
+  		 </script>   
+  		<!-- Speech to text -->
+<script>
+		var userID = document.getElementById('userid');
+	
+        window.SpeechRecognition = window.SpeechRecognition        ||
+     							   window.webkitSpeechRecognition  ||
+      						       null;
+        if (window.SpeechRecognition === null) {
+            document.getElementById('createChannelButton').setAttribute('disabled', 'disabled');
+        //    document.getElementById('button-stop-ws').setAttribute('disabled', 'disabled');
+            console.log('error');
+         } else {
+        	 var recognizer = new window.SpeechRecognition();
+        	 var transcription = document.getElementById('transcription');
+        	  var inputMessage = document.getElementById('inputmessage');
+        	  var timer = 0;
+        	 recognizer.continuous = true;
+        	 recognizer.onresult = function(event) {
+                 //transcription.textContent = '';
+                 inputMessage.value='';
+                 for(var i = event.resultIndex; i < event.results.length;i++)
+               		{
+                		if(event.results[i].isFinal)
+                		{
+                			inputMessage.value = event.results[i][0].transcript+ '.';
+                			//transcription.textContent = event.results[i][0].transcript+ '.';
+                			send();
+                			               			
+                		}
+                		else
+                		{
+                			inputMessage.value += event.results[i][0].transcript;
+                			//transcription.textContent += event.results[i][0].transcript;
+                		}
+                		
+                	}
+                 
+        	 };
+        	
+        	 recognizer.interimResults = true;
+              document.getElementById('createChannelButton').addEventListener('click', function(){
+            	 
+            	  var Stringid = document.getElementById('userid').value;
+            
+            	  $("#user_kickname").html(Stringid);
+            	
+            	  
+            	  recognize_startar();
+              	//  recognize_stop();
+              	  enter();
+                                        
+              });
+              document.getElementById('connectChannelButton').addEventListener('click', function(){
+            	
+            	//  recognize_stop();
+            	            	  var Stringid = document.getElementById('userid').value;
+            	  var newDate = new Date();
+            	  var yy = newDate.getFullYear();
+            	  var mm = newDate.getMonth()+1;
+            	  var dd = newDate.getDate();
+            	  var toDay = yy + "-" + mm + "-" + dd;
+            	  $("#user_kickname").html(Stringid);
+            	  $("#date").html(toDay);
+            	  
+            	  enter();
+            	  recognize_startar();
+            	  
+                  });
+              
+              //document.getElementById('button-stop-ws').addEventListener('click', function() {
+             //     recognizer.stop();
+              //   });
+        
+            }
+         
+        
+   </script>
+
+   <script type="text/javascript">
+        var textarea = document.getElementById("transcription");
+        var ip_address = 'ws://192.168.0.23:8080/conference/broadcasting' 
+        var webSocket = new WebSocket(ip_address);
+        
+        
+    webSocket.onerror = function(event) {
+      onError(event)
+    };
+    webSocket.onopen = function(event) {
+      onOpen(event)
+    };
+    webSocket.onmessage = function(event) {
+      onMessage(event)
+    };
+    function onMessage(event) {
+        //textarea.value += "상대 : " + event.data + "\n";
+        textarea.value += event.data + "\n";
+        textarea = document.getElementById("transcription");
+        textarea.scrollTop = textarea.scrollHeight;
+    }
+    function onOpen(event) {
+       // textarea.value += "연결 성공\n";
+    	
+    }
+    function onError(event) {
+      alert(event.data);
+    }
+    
+    function enter(){
+    	 textarea.value += "**" + userID.value + " 님이 입장 하셨습니다.** \n";
+   	 	 webSocket.send("**" + userID.value + " 님이 입장 하셨습니다.** \n");
+    }
+ 
+    function send() { 
+     //   textarea.value += "나 : " + inputMessage.value + "\n";
+        textarea.value += userID.value +": " + inputMessage.value + "\n";
+        webSocket.send(userID.value+": "+inputMessage.value);
+        textarea.scrollTop = textarea.scrollHeight;
+        inputMessage.value = '';      
+        
+        textarea = document.getElementById("transcription");
+        textarea.scrollTop = textarea.scrollHeight;
+        
+       
+        
+    }
+    
+    
+
+  </script>
+	</body>
+</html>
